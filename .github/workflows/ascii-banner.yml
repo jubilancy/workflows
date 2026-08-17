@@ -1,0 +1,59 @@
+name: ascii-banner
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ascii-banner.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate ASCII art
+        id: art
+        uses: mscoutermarsh/ascii-art-action@master
+        with:
+          text: "JUBILANCY"
+
+      - name: Render ASCII text as SVG image
+        run: |
+          mkdir -p workflows/ascii-banner
+          python3 - <<'PY'
+          import html
+
+          text = """${{ steps.art.outputs.art }}"""
+          lines = text.splitlines() or ["(no output)"]
+          line_height = 18
+          width = max((len(l) for l in lines), default=10) * 9 + 40
+          height = len(lines) * line_height + 40
+
+          svg_lines = "".join(
+              f'<text x="20" y="{30 + i * line_height}" font-family="monospace" '
+              f'font-size="14" fill="#2e2e2e">{html.escape(l)}</text>'
+              for i, l in enumerate(lines)
+          )
+
+          svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">
+          <rect width="100%" height="100%" fill="#fdfdfd"/>
+          {svg_lines}
+          </svg>'''
+
+          with open("workflows/ascii-banner/output.svg", "w") as f:
+              f.write(svg)
+          PY
+
+      - name: Commit output
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add workflows/ascii-banner/output.svg
+          git diff --quiet --cached || git commit -m "Update ascii-banner output"
+          git pull --rebase origin main
+          git push

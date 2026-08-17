@@ -1,0 +1,42 @@
+/* Small additions on top of Sakura for this site */
+
+.workflow-list {
+  list-style: none;
+  padding: 0;
+}
+
+.workflow-list li {
+  padding: 0.6em 0;
+  border-bottom: 1px solid #eee;
+}
+
+.workflow-list a {
+  font-size: 1.1em;
+  text-decoration: none;
+}
+
+.workflow-list p {
+  margin: 0.2em 0 0 0;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.badge img {
+  vertical-align: middle;
+}
+
+.preview {
+  max-width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1.5em;
+}
+
+.meta {
+  color: #666;
+  font-size: 0.9em;
+}

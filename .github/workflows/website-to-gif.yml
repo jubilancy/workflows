@@ -1,0 +1,36 @@
+name: website-to-gif
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/website-to-gif.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # weekly refresh, optional — remove if not wanted
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate GIF
+        uses: PabloLec/website-to-gif@2.1.0
+        with:
+          url: "https://jubilancy.github.io"
+          save_path: "/workflows/website-to-gif/"
+          file_name: "output"
+          file_format: "GIF"
+
+      - name: Commit output
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add workflows/website-to-gif/output.gif
+          git diff --quiet --cached || git commit -m "Update website-to-gif output"
+          git pull --rebase origin main
+          git push

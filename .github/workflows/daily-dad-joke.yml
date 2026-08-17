@@ -1,0 +1,62 @@
+name: daily-dad-joke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/daily-dad-joke.yml"
+  schedule:
+    - cron: "0 13 * * *" # new joke daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch a dad joke
+        id: joke
+        uses: mr-ayy/skills-write-javascript-actions@v2
+
+      - name: Render joke as SVG card
+        run: |
+          mkdir -p workflows/daily-dad-joke
+          python3 - <<'PY'
+          import html
+          import textwrap
+
+          joke = """${{ steps.joke.outputs.joke-output }}""".strip() or "(no joke today)"
+          wrapped = textwrap.wrap(joke, width=48) or ["(no joke today)"]
+
+          line_height = 26
+          width = 560
+          height = len(wrapped) * line_height + 80
+
+          text_lines = "".join(
+              f'<text x="40" y="{50 + i * line_height}" font-family="Georgia, serif" '
+              f'font-size="20" fill="#3a2e2e">{html.escape(l)}</text>'
+              for i, l in enumerate(wrapped)
+          )
+
+          svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">
+          <rect width="100%" height="100%" fill="#fff8e7" stroke="#e8d9b5" stroke-width="2"/>
+          <text x="40" y="34" font-family="monospace" font-size="14" fill="#b08a3e">Dad Joke of the Day</text>
+          {text_lines}
+          </svg>'''
+
+          with open("workflows/daily-dad-joke/output.svg", "w") as f:
+              f.write(svg)
+          PY
+
+      - name: Commit output
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add workflows/daily-dad-joke/output.svg
+          git diff --quiet --cached || git commit -m "Update daily-dad-joke output"
+          git pull --rebase origin main
+          git push
