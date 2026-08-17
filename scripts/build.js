@@ -68,6 +68,67 @@ function discoverTools() {
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
+function extractCredits(fileContent) {
+  const credits = [];
+  const seen = new Set();
+
+  // GitHub Actions: "uses: owner/repo@ref" or "uses: owner/repo/sub@ref"
+  const usesPattern = /uses:\s*([A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+)@([A-Za-z0-9_.\/-]+)/g;
+  let m;
+  while ((m = usesPattern.exec(fileContent)) !== null) {
+    const fullRef = m[1]; // e.g. "PabloLec/website-to-gif" or "actions/checkout"
+    const ref = m[2];
+    // Skip local site-machinery actions (checkout, setup-node, pages, etc. are still
+    // credited since they're real external actions worth crediting too).
+    const repoPath = fullRef.split("/").slice(0, 2).join("/"); // owner/repo only
+    const key = `action:${repoPath}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    credits.push({
+      type: "action",
+      label: repoPath,
+      url: `https://github.com/${repoPath}`,
+      detail: ref,
+    });
+  }
+
+  // External API hosts referenced via curl/fetch URLs.
+  const urlPattern = /https?:\/\/([a-zA-Z0-9.-]+)(?:\/[^\s"'<>]*)?/g;
+  const skipHosts = new Set([
+    "github.com",
+    "raw.githubusercontent.com",
+    "cdn.jsdelivr.net",
+    "api.github.com",
+    "www.w3.org", // SVG XML namespace boilerplate, not a real credit
+  ]);
+  while ((m = urlPattern.exec(fileContent)) !== null) {
+    const host = m[1];
+    if (skipHosts.has(host)) continue;
+    const key = `api:${host}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    credits.push({
+      type: "api",
+      label: host,
+      url: `https://${host}`,
+      detail: "API",
+    });
+  }
+
+  return credits;
+}
+
+function discoverCredits(tools) {
+  const bySlug = {};
+  for (const tool of tools) {
+    const filePath = path.join(WORKFLOWS_YAML_DIR, tool.workflow_file);
+    const content = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : "";
+    bySlug[tool.slug] = extractCredits(content);
+  }
+  return bySlug;
+}
+
+
 function findOutputFile(dir) {
   const files = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
   return files.find((f) => /\.(gif|webp|png|jpe?g|svg)$/i.test(f)) || null;
@@ -111,9 +172,44 @@ function buildIndexPage(tools) {
 <ul class="workflow-list">
 ${items}
 </ul>
+<p><a href="credits.html">Credits &rarr;</a></p>
 ${FOOT}`;
 }
 
+function buildCreditsPage(tools, creditsBySlug) {
+  const sections = tools
+    .map((t) => {
+      const credits = creditsBySlug[t.slug] || [];
+      if (credits.length === 0) {
+        return `  <li>
+    <strong>${t.name}</strong>
+    <p class="meta">No external action or API detected.</p>
+  </li>`;
+      }
+      const links = credits
+        .map((c) => {
+          const tag = c.type === "action" ? "GitHub Action" : "API";
+          return `<a href="${c.url}">${c.label}</a> <span class="meta">(${tag}${
+            c.detail && c.type === "action" ? ` @ ${c.detail}` : ""
+          })</span>`;
+        })
+        .join("<br>");
+      return `  <li>
+    <strong>${t.name}</strong>
+    <p>${links}</p>
+  </li>`;
+    })
+    .join("\n");
+
+  return `${HEAD("Credits", 0)}
+<a class="back-link" href="index.html">&larr; All workflows</a>
+<h1>Credits</h1>
+<p>Every workflow on this site relies on an open-source GitHub Action, a free public API, or both. This page is generated automatically from <code>.github/workflows/</code> — nothing here is hand-typed.</p>
+<ul class="workflow-list">
+${sections}
+</ul>
+${FOOT}`;
+}
 function main() {
   const tools = discoverTools();
 
@@ -125,6 +221,10 @@ function main() {
     console.log(`Building page: ${tool.name} (${tool.slug})`);
     buildWorkflowPage(tool);
   }
+
+  const creditsBySlug = discoverCredits(tools);
+  fs.writeFileSync(path.join(ROOT, "credits.html"), buildCreditsPage(tools, creditsBySlug));
+  console.log("Building page: Credits (credits.html)");
 
   fs.writeFileSync(path.join(ROOT, "index.html"), buildIndexPage(tools));
   console.log("Done.");
