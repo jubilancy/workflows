@@ -1,0 +1,81 @@
+name: bored-activity
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+  schedule:
+    - cron: "0 17 * * *" # new suggestion daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derive slug from this workflow's own filename
+        id: slug
+        run: |
+          ref="${{ github.workflow_ref }}"
+          nover="${ref%@*}"
+          slug="$(basename "$nover" .yml)"
+          slug="$(basename "$slug" .yaml)"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch a random activity
+        id: activity
+        run: |
+          activity="$(curl -s https://bored-api.appbrewery.com/random | python3 -c 'import json,sys; print(json.load(sys.stdin)["activity"])')"
+          echo "activity<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$activity" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Render activity as SVG card
+        run: |
+          mkdir -p "workflows/${{ steps.slug.outputs.slug }}"
+          python3 - <<'PY'
+          import html
+          import textwrap
+
+          activity = """${{ steps.activity.outputs.activity }}""".strip() or "(nothing to do today)"
+          wrapped = textwrap.wrap(activity, width=42) or ["(nothing to do today)"]
+
+          line_height = 28
+          width = 560
+          height = len(wrapped) * line_height + 90
+
+          text_lines = "".join(
+              f'<text x="40" y="{55 + i * line_height}" font-family="Georgia, serif" '
+              f'font-size="20" fill="#332b1e">{html.escape(l)}</text>'
+              for i, l in enumerate(wrapped)
+          )
+
+          svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">
+          <rect width="100%" height="100%" fill="#fff6e8" stroke="#f0dcac" stroke-width="2"/>
+          <text x="40" y="34" font-family="monospace" font-size="14" fill="#a67c2e">✨ Something to do today</text>
+          {text_lines}
+          </svg>'''
+
+          slug = "${{ steps.slug.outputs.slug }}"
+          with open(f"workflows/{slug}/output.svg", "w") as f:
+              f.write(svg)
+          PY
+
+      - name: Commit output
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "workflows/${{ steps.slug.outputs.slug }}/output.svg"
+          if git diff --quiet --cached; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update ${{ steps.slug.outputs.slug }} output"
+            git fetch origin main
+            git rebase origin/main
+            git push
+          fi

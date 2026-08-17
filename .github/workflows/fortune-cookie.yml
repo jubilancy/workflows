@@ -1,0 +1,91 @@
+name: fortune-cookie
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+  schedule:
+    - cron: "0 21 * * *" # new fortune daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derive slug from this workflow's own filename
+        id: slug
+        run: |
+          ref="${{ github.workflow_ref }}"
+          nover="${ref%@*}"
+          slug="$(basename "$nover" .yml)"
+          slug="$(basename "$slug" .yaml)"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+
+      - name: Generate a fortune cookie card
+        run: |
+          mkdir -p "workflows/${{ steps.slug.outputs.slug }}"
+          python3 - <<'PY'
+          import html
+          import random
+          import textwrap
+
+          fortunes = [
+              "A journey of a thousand commits begins with a single push.",
+              "The bug you fear the most teaches you the most.",
+              "Your code will compile when you least expect it.",
+              "A refactor delayed is a refactor denied.",
+              "Good things come to those who write good tests.",
+              "The best time to comment your code was yesterday.",
+              "A clever hack today is a headache tomorrow.",
+              "Simplicity is the ultimate sophistication in your codebase.",
+              "You will soon find the missing semicolon.",
+              "Patience with a slow build brings unexpected calm.",
+              "Your next pull request will be merged without conflict.",
+              "A small script today saves a large headache tomorrow.",
+          ]
+
+          fortune = random.choice(fortunes)
+          wrapped = textwrap.wrap(fortune, width=36)
+
+          line_height = 26
+          width = 480
+          height = len(wrapped) * line_height + 110
+
+          text_lines = "".join(
+              f'<text x="240" y="{60 + i * line_height}" font-family="Georgia, serif" '
+              f'font-size="19" fill="#3a2a1a" text-anchor="middle">{html.escape(l)}</text>'
+              for i, l in enumerate(wrapped)
+          )
+
+          svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">
+          <rect width="100%" height="100%" fill="#fff8ec"/>
+          <path d="M 40 30 Q 240 -10 440 30 Q 460 60 240 60 Q 20 60 40 30 Z"
+                fill="#f2dfb8" stroke="#d8b878" stroke-width="2"/>
+          <text x="240" y="34" font-size="20" text-anchor="middle">🥠</text>
+          {text_lines}
+          </svg>'''
+
+          slug = "${{ steps.slug.outputs.slug }}"
+          with open(f"workflows/{slug}/output.svg", "w") as f:
+              f.write(svg)
+          PY
+
+      - name: Commit output
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "workflows/${{ steps.slug.outputs.slug }}/output.svg"
+          if git diff --quiet --cached; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update ${{ steps.slug.outputs.slug }} output"
+            git fetch origin main
+            git rebase origin/main
+            git push
+          fi

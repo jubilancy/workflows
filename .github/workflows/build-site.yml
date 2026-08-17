@@ -43,7 +43,7 @@ jobs:
 
       - name: Commit generated site
         run: |
-          git add index.html workflows/
+          git add index.html credits.html workflows/
           if git diff --quiet --cached; then
             echo "No changes to commit."
           else

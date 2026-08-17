@@ -1,0 +1,46 @@
+name: typing-banner
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derive slug from this workflow's own filename
+        id: slug
+        run: |
+          ref="${{ github.workflow_ref }}"
+          nover="${ref%@*}"
+          slug="$(basename "$nover" .yml)"
+          slug="$(basename "$slug" .yaml)"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch typing animation SVG
+        run: |
+          mkdir -p "workflows/${{ steps.slug.outputs.slug }}"
+          curl -sL "https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&pause=1000&color=6C63FF&lines=Hello%2C+I'm+jubilancy!;Always+tinkering+with+something.;Welcome+to+my+workflow+showcase." \
+            -o "workflows/${{ steps.slug.outputs.slug }}/output.svg"
+
+      - name: Commit output
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "workflows/${{ steps.slug.outputs.slug }}/output.svg"
+          if git diff --quiet --cached; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update ${{ steps.slug.outputs.slug }} output"
+            git fetch origin main
+            git rebase origin/main
+            git push
+          fi
