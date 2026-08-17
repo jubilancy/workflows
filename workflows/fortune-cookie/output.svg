@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="162">
+<rect width="100%" height="100%" fill="#fff8ec"/>
+<path d="M 40 30 Q 240 -10 440 30 Q 460 60 240 60 Q 20 60 40 30 Z"
+      fill="#f2dfb8" stroke="#d8b878" stroke-width="2"/>
+<text x="240" y="34" font-size="20" text-anchor="middle">🥠</text>
+<text x="240" y="60" font-family="Georgia, serif" font-size="19" fill="#3a2a1a" text-anchor="middle">The best time to comment your code</text><text x="240" y="86" font-family="Georgia, serif" font-size="19" fill="#3a2a1a" text-anchor="middle">was yesterday.</text>
+</svg>
