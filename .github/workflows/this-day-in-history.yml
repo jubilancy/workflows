@@ -1,0 +1,99 @@
+name: this-day-in-history
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+  schedule:
+    - cron: "0 8 * * *" # new fact each day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derive slug from this workflow's own filename
+        id: slug
+        run: |
+          ref="${{ github.workflow_ref }}"
+          nover="${ref%@*}"
+          slug="$(basename "$nover" .yml)"
+          slug="$(basename "$slug" .yaml)"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch today's date fact
+        id: fact
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import datetime
+          import urllib.request
+
+          today = datetime.date.today()
+          url = f"http://numbersapi.com/{today.month}/{today.day}/date"
+          with urllib.request.urlopen(url) as r:
+              fact = r.read().decode("utf-8").strip()
+
+          print("fact<<EOF")
+          print(fact)
+          print("EOF")
+          print(f"date_label={today.strftime('%B %-d')}")
+          PY
+
+      - name: Render fact as SVG card
+        run: |
+          mkdir -p "workflows/${{ steps.slug.outputs.slug }}"
+          python3 - <<'PY'
+          import html
+          import textwrap
+
+          fact = """${{ steps.fact.outputs.fact }}""".strip() or "(no fact today)"
+          date_label = "${{ steps.fact.outputs.date_label }}"
+          wrapped = textwrap.wrap(fact, width=46) or ["(no fact today)"]
+
+          line_height = 26
+          width = 580
+          height = len(wrapped) * line_height + 90
+
+          text_lines = "".join(
+              f'<text x="40" y="{58 + i * line_height}" font-family="Georgia, serif" '
+              f'font-size="19" fill="#22303e">{html.escape(l)}</text>'
+              for i, l in enumerate(wrapped)
+          )
+
+          svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">
+          <rect width="100%" height="100%" fill="#eaf4f4" stroke="#bcdede" stroke-width="2"/>
+          <text x="40" y="34" font-family="monospace" font-size="14" fill="#2f7d7d">On {date_label}, in history...</text>
+          {text_lines}
+          </svg>'''
+
+          slug = "${{ steps.slug.outputs.slug }}"
+          with open(f"workflows/{slug}/output.svg", "w") as f:
+              f.write(svg)
+          PY
+
+      - name: Commit output
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "workflows/${{ steps.slug.outputs.slug }}/output.svg"
+          if git diff --quiet --cached; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Update ${{ steps.slug.outputs.slug }} output"
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main && git push && exit 0
+            echo "Push attempt $i failed, retrying..."
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 10 + 1))
+            git rebase origin/main
+          done
+          echo "All push attempts failed."
+          exit 1
