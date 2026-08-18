@@ -1,0 +1,57 @@
+name: readme-stats-card
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+  schedule:
+    - cron: "0 0 * * *" # daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derive slug from this workflow's own filename
+        id: slug
+        run: |
+          ref="${{ github.workflow_ref }}"
+          nover="${ref%@*}"
+          slug="$(basename "$nover" .yml)"
+          slug="$(basename "$slug" .yaml)"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+
+      - name: Generate stats card
+        uses: stats-organization/github-readme-stats-action@v2
+        with:
+          card: stats
+          options: username=${{ github.repository_owner }}&show_icons=true
+          path: workflows/${{ steps.slug.outputs.slug }}/output.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit output
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "workflows/${{ steps.slug.outputs.slug }}/output.svg"
+          if git diff --quiet --cached; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Update ${{ steps.slug.outputs.slug }} output"
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main && git push && exit 0
+            echo "Push attempt $i failed, retrying..."
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 10 + 1))
+            git rebase origin/main
+          done
+          echo "All push attempts failed."
+          exit 1
