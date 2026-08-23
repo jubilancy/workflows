@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="560" height="132">
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="210">
 <rect width="100%" height="100%" fill="#eef3ff" stroke="#c9d6f7" stroke-width="2"/>
 <text x="40" y="34" font-family="monospace" font-size="14" fill="#5b6fa8">🐱 Cat Fact of the Day</text>
-<text x="40" y="50" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">The leopard is the most widespread of all big</text><text x="40" y="76" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">cats.</text>
+<text x="40" y="50" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">Researchers believe the word “tabby” comes</text><text x="40" y="76" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">from Attabiyah, a neighborhood in Baghdad,</text><text x="40" y="102" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">Iraq. Tabbies got their name because their</text><text x="40" y="128" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">striped coats resembled the famous wavy</text><text x="40" y="154" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">patterns in the silk produced in this city.</text>
 </svg>
