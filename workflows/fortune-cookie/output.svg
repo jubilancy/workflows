@@ -3,5 +3,5 @@
 <path d="M 40 30 Q 240 -10 440 30 Q 460 60 240 60 Q 20 60 40 30 Z"
       fill="#f2dfb8" stroke="#d8b878" stroke-width="2"/>
 <text x="240" y="34" font-size="20" text-anchor="middle">🥠</text>
-<text x="240" y="60" font-family="Georgia, serif" font-size="19" fill="#3a2a1a" text-anchor="middle">Your code will compile when you</text><text x="240" y="86" font-family="Georgia, serif" font-size="19" fill="#3a2a1a" text-anchor="middle">least expect it.</text>
+<text x="240" y="60" font-family="Georgia, serif" font-size="19" fill="#3a2a1a" text-anchor="middle">You will soon find the missing</text><text x="240" y="86" font-family="Georgia, serif" font-size="19" fill="#3a2a1a" text-anchor="middle">semicolon.</text>
 </svg>
