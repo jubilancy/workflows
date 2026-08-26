@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="560" height="132">
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="210">
 <rect width="100%" height="100%" fill="#eef3ff" stroke="#c9d6f7" stroke-width="2"/>
 <text x="40" y="34" font-family="monospace" font-size="14" fill="#5b6fa8">🐱 Cat Fact of the Day</text>
-<text x="40" y="50" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">A 2007 Gallup poll revealed that both men and</text><text x="40" y="76" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">women were equally likely to own a cat.</text>
+<text x="40" y="50" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">Smuggling a cat out of ancient Egypt was</text><text x="40" y="76" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">punishable by death. Phoenician traders</text><text x="40" y="102" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">eventually succeeded in smuggling felines,</text><text x="40" y="128" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">which they sold to rich people in Athens and</text><text x="40" y="154" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">other important cities.</text>
 </svg>
