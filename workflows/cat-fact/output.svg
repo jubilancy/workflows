@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="560" height="132">
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="236">
 <rect width="100%" height="100%" fill="#eef3ff" stroke="#c9d6f7" stroke-width="2"/>
 <text x="40" y="34" font-family="monospace" font-size="14" fill="#5b6fa8">🐱 Cat Fact of the Day</text>
-<text x="40" y="50" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">Baking chocolate is the most dangerous</text><text x="40" y="76" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">chocolate to your cat.</text>
+<text x="40" y="50" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">During the Middle Ages, cats were associated</text><text x="40" y="76" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">with withcraft, and on St. John’s Day, people</text><text x="40" y="102" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">all over Europe would stuff them into sacks</text><text x="40" y="128" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">and toss the cats into bonfires. On holy days,</text><text x="40" y="154" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">people celebrated by tossing cats from church</text><text x="40" y="180" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">towers.</text>
 </svg>
