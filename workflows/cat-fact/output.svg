@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="560" height="158">
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="210">
 <rect width="100%" height="100%" fill="#eef3ff" stroke="#c9d6f7" stroke-width="2"/>
 <text x="40" y="34" font-family="monospace" font-size="14" fill="#5b6fa8">🐱 Cat Fact of the Day</text>
-<text x="40" y="50" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">A cat&#x27;s whiskers are thought to be a kind of</text><text x="40" y="76" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">radar, which helps a cat gauge the space it</text><text x="40" y="102" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">intends to walk through.</text>
+<text x="40" y="50" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">If a cat is frightened, the hair stands up</text><text x="40" y="76" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">fairly evenly all over the body; when the cat</text><text x="40" y="102" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">is threatened or is ready to attack, the hair</text><text x="40" y="128" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">stands up only in a narrow band along the</text><text x="40" y="154" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">spine and tail.</text>
 </svg>
