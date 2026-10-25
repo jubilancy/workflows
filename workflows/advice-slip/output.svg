@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="560" height="118">
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="174">
 <rect width="100%" height="100%" fill="#eefaf0" stroke="#bfe8c9" stroke-width="2"/>
 <text x="40" y="34" font-family="monospace" font-size="14" fill="#3f8a56">Random Advice</text>
-<text x="40" y="55" font-family="Georgia, serif" font-style="italic" font-size="20" fill="#243b2f">Do not seek praise, seek criticism.</text>
+<text x="40" y="55" font-family="Georgia, serif" font-style="italic" font-size="20" fill="#243b2f">The number of vampires in the average home,</text><text x="40" y="83" font-family="Georgia, serif" font-style="italic" font-size="20" fill="#243b2f">is directly proportional to the amount of</text><text x="40" y="111" font-family="Georgia, serif" font-style="italic" font-size="20" fill="#243b2f">garlic bread in the fridge.</text>
 </svg>
