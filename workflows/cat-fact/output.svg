@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="560" height="158">
 <rect width="100%" height="100%" fill="#eef3ff" stroke="#c9d6f7" stroke-width="2"/>
 <text x="40" y="34" font-family="monospace" font-size="14" fill="#5b6fa8">🐱 Cat Fact of the Day</text>
-<text x="40" y="50" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">When a cat chases its prey, it keeps its head</text><text x="40" y="76" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">level. Dogs and humans bob their heads up and</text><text x="40" y="102" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">down.</text>
+<text x="40" y="50" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">A cat&#x27;s jaw has only up and down motion; it</text><text x="40" y="76" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">does not have any lateral, side to side</text><text x="40" y="102" font-family="Georgia, serif" font-size="19" fill="#2e2e3a">motion, like dogs and humans.</text>
 </svg>
